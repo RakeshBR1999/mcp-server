@@ -1,0 +1,4 @@
+mcp-sdk>=1.0.0
+anthropic>=0.8.0
+aiohttp>=3.8.0
+asyncio>=3.4.3

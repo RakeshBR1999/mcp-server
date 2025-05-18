@@ -1,0 +1,16 @@
+{
+    "server": {
+        "host": "0.0.0.0",
+        "port": 8000,
+        "debug": false
+    },
+    "retrieval": {
+        "max_context_length": 4000,
+        "max_results": 5,
+        "similarity_threshold": 0.7
+    },
+    "logging": {
+        "level": "INFO",
+        "file": "logs/simple_mcp_server.log"
+    }
+}

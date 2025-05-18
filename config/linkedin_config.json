@@ -1,0 +1,21 @@
+{
+    "server": {
+        "host": "0.0.0.0",
+        "port": 8002,
+        "debug": false
+    },
+    "linkedin": {
+        "client_id": "",
+        "client_secret": "",
+        "redirect_uri": "http://localhost:8002/auth/callback",
+        "scope": "r_liteprofile r_emailaddress"
+    },
+    "retrieval": {
+        "max_context_length": 2000,
+        "max_results": 3
+    },
+    "logging": {
+        "level": "INFO",
+        "file": "logs/linkedin_mcp_server.log"
+    }
+}
