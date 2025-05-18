@@ -10,7 +10,7 @@ from clients.llm_with_mcp import get_github_context, generate_with_context, post
 async def run_example():
     # Example 1: Get GitHub repository context
     print("Fetching context from a GitHub repository...")
-    github_data = await get_github_context("anthropics", "anthropic-mcp-sdk", "README.md")
+    github_data = await get_github_context("RakeshBR1999", "mcp-server", "README.md")
     print(f"Received GitHub context: {github_data}\n")
 
     # Example 2: Generate content using LLM with the GitHub context

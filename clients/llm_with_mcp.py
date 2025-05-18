@@ -1,43 +1,63 @@
+import sys, os, asyncio
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from mcp import Client
 import anthropic
 
 # Initialize MCP clients
-github_client = Client(server_url="http://localhost:8081")
+github_client   = Client(server_url="http://localhost:8081")
 linkedin_client = Client(server_url="http://localhost:8082")
 
 # Initialize Anthropic client
 claude = anthropic.Anthropic(api_key="YOUR_API_KEY")
 
-# Function to get GitHub context
 async def get_github_context(repo_owner, repo_name, path):
-    github_context = await github_client.resource("repository", 
-                                                 repo_owner=repo_owner,
-                                                 repo_name=repo_name,
-                                                 path=path)
-    return github_context
+    return await github_client.resource(
+        "repository",
+        repo_owner=repo_owner,
+        repo_name=repo_name,
+        path=path
+    )
 
-# Function to use LLM with context
 async def generate_with_context(prompt, github_context):
-    response = claude.messages.create(
+    resp = claude.messages.create(
         model="claude-3-opus-20240229",
         max_tokens=1000,
-        messages=[
-            {
-                "role": "user",
-                "content": f"GitHub context: {github_context}\n\nPrompt: {prompt}"
-            }
-        ]
+        messages=[{
+            "role": "user",
+            "content": f"GitHub context: {github_context}\n\nPrompt: {prompt}"
+        }]
     )
-    return response.content[0].text
+    # Depending on SDK version, you may need resp.get("completion") or similar
+    return resp.content[0].text
 
-# Function to post to LinkedIn
 async def post_to_linkedin(access_token, content):
-    result = await linkedin_client.tool("post_to_linkedin",
-                                       access_token=access_token,
-                                       content=content)
-    return result
+    return await linkedin_client.tool(
+        "post_to_linkedin",
+        access_token=access_token,
+        content=content
+    )
 
-# Example usage (would need to be wrapped in an async function or run with asyncio)
-# github_data = await get_github_context("username", "repo-name", "path/to/file.py")
-# llm_response = await generate_with_context("Explain this code", github_data)
-# linkedin_result = await post_to_linkedin("YOUR_TOKEN", "Check out this amazing code explanation!")
+async def main():
+    # 1) Fetch some GitHub context
+    github_data = await get_github_context(
+        "username", "repo-name", "path/to/file.py"
+    )
+    print("🔍 GitHub context fetched:", github_data)
+
+    # 2) Generate explanation via Claude
+    explanation = await generate_with_context(
+        "Explain this code", github_data
+    )
+    print("\n💡 LLM explanation:\n", explanation)
+
+    # 3) (Optional) Post to LinkedIn
+    linkedin_result = await post_to_linkedin(
+        "YOUR_TOKEN",
+        f"Check out this code explanation:\n\n{explanation}"
+    )
+    print("\n✅ LinkedIn post result:", linkedin_result)
+
+if __name__ == "__main__":
+    # Run the async main
+    asyncio.run(main())
